@@ -1,0 +1,29 @@
+# This is a basic workflow to help you get started with Actions
+name: CI
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+jobs:
+  mirror_to_github:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+  
+      - name: 'Config'
+        run: |
+          mkdir -p docs
+          git clone https://github.com/seqyuan/sphinxbook.git
+          cp -r sphinxbook/docs/* ./docs/
+          rm -rf sphinxbook
+  
+      - name: 'Deploy'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.DORDEP }}
+          publish_dir: ./docs
